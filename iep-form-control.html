@@ -1,0 +1,80 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../paper-radio-button/paper-radio-button.html">
+
+<dom-module id="iep-form-control">
+  <style>
+    :host {
+      display: block;
+      box-sizing: border-box;
+    }
+  </style>
+  <template>
+   <paper-radio-group selected="{{selectedType}}">
+     <paper-radio-button name="pros">จุดเด่น</paper-radio-button>
+     <paper-radio-button name="cons">จุดด้อย</paper-radio-button>
+   </paper-radio-group>
+   <div hidden$="{{isPros}}">
+     <paper-checkbox checked="{{isLongTerm}}">เป้าหมายระยะยาว</paper-checkbox>
+   </div>
+   <div hidden$="{{_hideLongTermPlan(isPros,isLongTerm)}}">
+     <paper-input label="เป้าหมายระยะยาวภายในปี" value="{{longTermPlan}}">
+     </paper-input>
+   </div>
+   <div hidden$="{{_hideShortTermObjective(isPros,isLongTerm)}}">
+     <paper-input label="จุดประสงค์เชิงพฤติกรรม" value="{{shortTermObjective}}">
+     </paper-input>
+   </div>
+   <span>{{jsonStr}}</span>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'iep-form-control',
+    properties: {
+      isPros : Boolean,
+      isLongTerm : Boolean,
+      longTermPlan : String,
+      jsonStr : {
+        type: String,
+        notify: true,
+        computed: '_generateJSON(isPros,isLongTerm,longTermPlan,shortTermObjective)',
+      },
+      selectedType: { 
+        type: String,
+        value: 'pros',
+        observer: '_selectedTypeChanged'
+      }
+    },
+    _hideLongTermPlan: function(isPros,isLongTerm) {
+      return isPros || !isLongTerm;
+    },
+    _hideShortTermObjective: function(isPros,isLongTerm) {
+      return isPros || (!this._hideLongTermPlan(isPros,isLongTerm));
+    },
+    _selectedTypeChanged: function() {
+      if(this.selectedType=="pros") {
+        this.isPros = true;
+      } else {
+        this.isPros = false;
+      }
+    },
+    _generateJSON: function(isPros,isLongTerm,
+      longTermPlan,shortTermObjective) {
+      var jsonObj = {};
+      jsonObj['isPros']=isPros;
+      if(!isPros) {
+        jsonObj['isLongTerm']=isLongTerm;
+        if(isLongTerm) {
+          jsonObj['longTermPlan'] = longTermPlan;
+        } else {
+          jsonObj['shortTermObjective'] = shortTermObjective;
+        }
+      }
+      return JSON.stringify(jsonObj);
+    }
+  });
+
+</script>
