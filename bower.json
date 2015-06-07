@@ -22,6 +22,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
     "paper-radio-group": "PolymerElements/paper-radio-group#^1.0.0",
+    "paper-material": "PolymerElements/paper-material#~1.0.0",
     "paper-radio-button": "PolymerElements/paper-radio-button#~1.0.1",
     "paper-checkbox": "PolymerElements/paper-checkbox#~1.0.1",
     "paper-input": "PolymerElements/paper-input#~1.0.0"

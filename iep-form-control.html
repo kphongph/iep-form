@@ -3,6 +3,7 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../paper-material/paper-material.html">
 
 <dom-module id="iep-form-control">
   <style>
@@ -10,24 +11,51 @@
       display: block;
       box-sizing: border-box;
     }
+    .container {
+      padding: 20px;
+    }
+    .container  p{
+      padding-top: 20px;
+      font-weight: bold;
+    }
   </style>
   <template>
-   <paper-radio-group selected="{{selectedType}}">
-     <paper-radio-button name="pros">จุดเด่น</paper-radio-button>
-     <paper-radio-button name="cons">จุดด้อย</paper-radio-button>
-   </paper-radio-group>
-   <div hidden$="{{isPros}}">
-     <paper-checkbox checked="{{isLongTerm}}">เป้าหมายระยะยาว</paper-checkbox>
-   </div>
-   <div hidden$="{{_hideLongTermPlan(isPros,isLongTerm)}}">
-     <paper-input label="เป้าหมายระยะยาวภายในปี" value="{{longTermPlan}}">
-     </paper-input>
-   </div>
-   <div hidden$="{{_hideShortTermObjective(isPros,isLongTerm)}}">
-     <paper-input label="จุดประสงค์เชิงพฤติกรรม" value="{{shortTermObjective}}">
-     </paper-input>
-   </div>
-   <span>{{jsonStr}}</span>
+    <paper-material elevation="2">
+      <div class="container">
+        <paper-checkbox checked="{{isPros}}">จุดเด่น</paper-checkbox>
+        <paper-checkbox checked="{{isCons}}">จุดด้อย</paper-checkbox>
+        <div hidden$="{{!isCons}}">
+          <p>เป้าหมายระยะยาว</p>
+          <paper-input label="เป้าหมายระยะยาวภายในปี" value="{{longTermPlan}}">
+          </paper-input>
+          
+          <p>เป้าหมายระยะสั้น</p>
+          <paper-input label="เป้าหมายระยะยาวภายใน เดือน/ปี" value="{{shortTermPlan}}">
+          </paper-input>
+          <paper-input label="จุดประสงค์เชิงพฤติกรรม" value="{{objective}}">
+          </paper-input>
+          <div>
+            <p>วิธีการ</p>
+            <paper-checkbox checked="{{method01}}">การสังเกตพฤติกรรม</paper-checkbox>
+            <paper-checkbox checked="{{method02}}">การสอบถาม</paper-checkbox>
+            <paper-checkbox checked="{{method03}}">การทดสอบ</paper-checkbox>
+          </div>
+          <div>
+            <p>เครื่องมือ</p>
+            <paper-checkbox checked="{{tool01}}">แบบสังเกตพฤติกรรม</paper-checkbox>
+            <paper-checkbox checked="{{tool02}}">แบบสอบถาม</paper-checkbox>
+            <paper-checkbox checked="{{tool03}}">แบบทดสอบ</paper-checkbox>
+          </div>
+        </div>
+        <paper-input label="เกณฑ์การประเมิน" value="{{criteria}}">
+        </paper-input>
+        <paper-input label="ผู้รับผิดชอบ" value="{{staff}}">
+        </paper-input>
+      </div>
+   </paper-material>
+   
+   <br /><br /><span>{{jsonStr}}</span>
+   
   </template>
 </dom-module>
 <script>
@@ -35,44 +63,38 @@
     is: 'iep-form-control',
     properties: {
       isPros : Boolean,
-      isLongTerm : Boolean,
+      isCons : Boolean,
       longTermPlan : String,
+      shortTermPlan : String,
+      objective : String,
+      method01 : Boolean, method02 : Boolean, method03 : Boolean,
+      tool01 : Boolean, tool02 : Boolean, tool03 : Boolean,
+      criteria : String,
+      staff : String,
       jsonStr : {
         type: String,
         notify: true,
-        computed: '_generateJSON(isPros,isLongTerm,longTermPlan,shortTermObjective)',
-      },
-      selectedType: { 
-        type: String,
-        value: 'pros',
-        observer: '_selectedTypeChanged'
+        computed: '_generateJSON(isPros,isCons,longTermPlan,shortTermPlan,objective,method01,method02,method03,tool01,tool02,tool03,criteria,staff)',
       }
     },
-    _hideLongTermPlan: function(isPros,isLongTerm) {
-      return isPros || !isLongTerm;
-    },
-    _hideShortTermObjective: function(isPros,isLongTerm) {
-      return isPros || (!this._hideLongTermPlan(isPros,isLongTerm));
-    },
-    _selectedTypeChanged: function() {
-      if(this.selectedType=="pros") {
-        this.isPros = true;
-      } else {
-        this.isPros = false;
-      }
-    },
-    _generateJSON: function(isPros,isLongTerm,
-      longTermPlan,shortTermObjective) {
+    _generateJSON: function() {
       var jsonObj = {};
-      jsonObj['isPros']=isPros;
-      if(!isPros) {
-        jsonObj['isLongTerm']=isLongTerm;
-        if(isLongTerm) {
-          jsonObj['longTermPlan'] = longTermPlan;
-        } else {
-          jsonObj['shortTermObjective'] = shortTermObjective;
-        }
+      jsonObj['isPros']=this.isPros;
+      jsonObj['isCons']=this.isCons;
+      if(this.isCons){
+        jsonObj['longTermPlan']=this.longTermPlan;
+        jsonObj['shortTermPlan']=this.shortTermPlan;
+        jsonObj['objective']=this.objective;
+        jsonObj['method01']=this.method01;
+        jsonObj['method02']=this.method02;
+        jsonObj['method03']=this.method03;
+        jsonObj['tool01']=this.tool01;
+        jsonObj['tool02']=this.tool02;
+        jsonObj['tool03']=this.tool03;
+        jsonObj['criteria']=this.criteria;
+        jsonObj['staff']=this.staff;
       }
+
       return JSON.stringify(jsonObj);
     }
   });
